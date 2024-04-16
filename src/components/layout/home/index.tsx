@@ -3,6 +3,7 @@ import { Card } from "@/components";
 import styled from "styled-components";
 import Link from "next/link";
 import { useCategories } from "@/context/auth/CategoriesContext";
+import Search from "./Search";
 
 const GridContainer = styled.div`
   display: grid;
@@ -15,15 +16,18 @@ const HomePage = () => {
   const { categories } = useCategories();
 
   return (
-    <GridContainer>
-      {Object.keys(categories).map((item) => {
-        return (
-          <Link href={`./${item}`}>
-            <Card>{item}</Card>
-          </Link>
-        );
-      })}
-    </GridContainer>
+    <div>
+      <Search />
+      <GridContainer>
+        {Object.keys(categories).map((item) => {
+          return (
+            <Link href={`./${item}`}>
+              <Card>{item}</Card>
+            </Link>
+          );
+        })}
+      </GridContainer>
+    </div>
   );
 };
 

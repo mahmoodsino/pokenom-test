@@ -1,11 +1,9 @@
 import { _Urls } from "@/api/_Urls";
 import { useFetch } from "@/api/hooks/useFetch";
 import { Card } from "@/components";
-import Modal from "@/components/modal/Modal";
-import { PokemonInfoType } from "@/types";
+import PokemonInformation from "@/components/modal/PokemonInfo";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import ReactApexChart from "react-apexcharts";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface PokemonTypes {
@@ -33,10 +31,6 @@ const NamePage = () => {
     query.name ? `${_Urls.root}/${query.category}/${query.name}` : ""
   );
   const [selectedUrl, setSelectedUrl] = useState("");
-  const { data: pokemonData } = useFetch<any>(selectedUrl ? selectedUrl : "");
-  const [pokemonInfo, setPokemonInfo] = useState<PokemonInfoType | null>(null);
-  const [openModal, setOpenModal] = useState(false);
-  const [chartData, setChartData] = useState<any>();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -47,90 +41,13 @@ const NamePage = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-    if (pokemonData) {
-      setPokemonInfo(pokemonData);
-    }
-  }, [pokemonData]);
-
-  useEffect(() => {
-    if (pokemonInfo) {
-      setOpenModal(true);
-      let categories: string[][] = [];
-      let base_stat: number[] = [];
-      pokemonInfo?.stats.map((item) => {
-        categories.push([item.stat.name]);
-        base_stat.push(item.base_stat);
-      });
-      const chart = {
-        series: [
-          {
-            data: base_stat,
-          },
-        ],
-        options: {
-          chart: {
-            height: 350,
-            type: "bar",
-          },
-          plotOptions: {
-            bar: {
-              columnWidth: "45%",
-              distributed: true,
-            },
-          },
-          dataLabels: {
-            enabled: false,
-          },
-          legend: {
-            show: false,
-          },
-          xaxis: {
-            categories: categories,
-            labels: {
-              style: {
-                fontSize: "12px",
-              },
-            },
-          },
-        },
-      };
-      setChartData(chart);
-    }
-  }, [pokemonInfo]);
-
-  useEffect(() => {
-    if (openModal) {
-      setSelectedUrl("");
-    }
-  }, [openModal]);
-
   if (pokemon?.length == 0) {
     return <div>No Pokemon </div>;
   }
   if (isClient) {
     return (
       <>
-        <Modal isOpen={openModal} setOpen={setOpenModal}>
-          <div>name:{pokemonInfo?.name}</div>
-          <div>species:{pokemonInfo?.species.name}</div>
-          <div>
-            abilities:
-            {pokemonInfo?.abilities.map((item) => {
-              return <p>{item.ability.name}</p>;
-            })}
-          </div>
-          {isClient && (
-            <div>
-              <ReactApexChart
-                options={chartData?.options}
-                series={chartData?.series}
-                type="bar"
-                height={350}
-              />
-            </div>
-          )}
-        </Modal>
+        <PokemonInformation url={selectedUrl} setSelectedUrl={setSelectedUrl} />
         <GridContainer>
           {pokemon?.map((item) => {
             return (
