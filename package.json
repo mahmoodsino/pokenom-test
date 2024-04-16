@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.19",
+    "apexcharts": "^3.48.0",
     "axios": "^1.6.8",
     "next": "14.2.1",
     "react": "^18",
+    "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
     "styled-components": "^6.1.8"
   },
