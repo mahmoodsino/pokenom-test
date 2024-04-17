@@ -2,6 +2,7 @@ import { _Urls } from "@/api/_Urls";
 import { useFetch } from "@/api/hooks/useFetch";
 import { Card } from "@/components";
 import Loading from "@/components/loader/Loading";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -51,7 +52,10 @@ const CategoryPage = () => {
     <div>
       <Title>{query.category} Categories</Title>
       <GridContainer>
-        {types?.map((item,i) => {
+        <Link href={`/`}>
+          <Card>Go Back</Card>
+        </Link>
+        {types?.map((item, i) => {
           return (
             <div key={i} onClick={() => pokemonName(item.url)}>
               <Card>{item.name}</Card>

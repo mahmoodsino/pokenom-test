@@ -1,5 +1,5 @@
 import queryClient from "@/api/queryClient";
-import { CategoriesProvider } from "@/context/auth/CategoriesContext";
+import { CategoriesProvider } from "@/context/CategoriesContext";
 import "@/styles/globals.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";

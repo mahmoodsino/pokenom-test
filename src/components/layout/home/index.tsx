@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components";
 import styled from "styled-components";
 import Link from "next/link";
-import { useCategories } from "@/context/auth/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import Search from "./Search";
 
 const GridContainer = styled.div`
@@ -16,7 +16,7 @@ const Title = styled.h1`
 text-align: center;
 font-weight: 700;
 font-size: 25px;
-`
+`;
 
 const HomePage = () => {
   const { categories } = useCategories();
@@ -26,7 +26,7 @@ const HomePage = () => {
       <Search />
       <Title>ALL CATEGORIES</Title>
       <GridContainer>
-        {Object.keys(categories).map((item,i) => {
+        {Object.keys(categories).map((item, i) => {
           return (
             <Link key={i} href={`./${item}`}>
               <Card>{item}</Card>
