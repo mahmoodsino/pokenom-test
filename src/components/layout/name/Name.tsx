@@ -1,7 +1,12 @@
 import { _Urls } from "@/api/_Urls";
 import { useFetch } from "@/api/hooks/useFetch";
 import { Card } from "@/components";
-import PokemonInformation from "@/components/modal/PokemonInfo";
+import Loading from "@/components/loader/Loading";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+const PokemonInformation = dynamic(() => import("../../modal/PokemonInfo"), {
+  ssr: false,
+});
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -11,12 +16,6 @@ interface PokemonTypes {
   slot: number;
 }
 
-interface chartDataType {
-  options: {};
-  series: number[];
-  labels: string[];
-}
-
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr); 
@@ -24,42 +23,75 @@ const GridContainer = styled.div`
   padding: 20px;
 `;
 
+const Title = styled.h1`
+text-align: center;
+font-weight: 700;
+font-size: 25px;
+`;
+
+const LinkContent = styled.div`
+text-align: center;
+margin: 20px;
+display: flex;
+gap: 10px;
+justify-content: center;
+`;
+
 const NamePage = () => {
   const { query } = useRouter();
   const [pokemon, setPokemon] = useState<PokemonTypes[]>([]);
-  const { data } = useFetch<any>(
+  const { data, isLoading } = useFetch<any>(
     query.name ? `${_Urls.root}/${query.category}/${query.name}` : ""
   );
   const [selectedUrl, setSelectedUrl] = useState("");
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-
     if (data) {
       setPokemon(data?.pokemon);
     }
   }, [data]);
 
-  if (pokemon?.length == 0) {
-    return <div>No Pokemon </div>;
+  if (isLoading) {
+    return <Loading />;
   }
-  if (isClient) {
-    return (
-      <>
-        <PokemonInformation url={selectedUrl} setSelectedUrl={setSelectedUrl} />
-        <GridContainer>
-          {pokemon?.map((item) => {
-            return (
-              <div onClick={() => setSelectedUrl(item.pokemon.url)}>
-                <Card>{item.pokemon.name}</Card>
-              </div>
-            );
-          })}
-        </GridContainer>
-      </>
-    );
-  }
+
+  return (
+    <>
+      <PokemonInformation url={selectedUrl} setSelectedUrl={setSelectedUrl} />
+      {pokemon?.length == 0 || !pokemon ? (
+        <div>
+          <Title>No Pokemon At This Category</Title>
+          <LinkContent>
+            <Link href={`/${query.category}`}>
+              <Card>Go Back</Card>
+            </Link>
+            <Link href={`/`}>
+              <Card>Go Home</Card>
+            </Link>
+          </LinkContent>
+        </div>
+      ) : (
+        <div>
+          <Title>ALL POKEMON</Title>
+          <GridContainer>
+            <Link href={`/${query.category}`}>
+              <Card>Go Back</Card>
+            </Link>
+            <Link href={`/`}>
+              <Card>Go Home</Card>
+            </Link>
+            {pokemon?.map((item, i) => {
+              return (
+                <div key={i} onClick={() => setSelectedUrl(item.pokemon.url)}>
+                  <Card>{item.pokemon.name}</Card>
+                </div>
+              );
+            })}
+          </GridContainer>
+        </div>
+      )}
+    </>
+  );
 };
 
 export { NamePage };

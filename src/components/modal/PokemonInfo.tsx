@@ -3,14 +3,31 @@ import { PokemonInfoType } from "@/types";
 import React, { FC, useState, useEffect } from "react";
 import Modal from "./Modal";
 import ReactApexChart from "react-apexcharts";
+import Loading from "../loader/Loading";
+import styled from "styled-components";
+
+
+const Title = styled.h2`
+text-align: center;
+font-weight: 600;
+font-size: 20px;
+`;
+
+const Div = styled.div`
+font-weight: 600;
+display: flex;
+gap: 5px;
+margin-top: 10px;
+font-size: 14px;
+`
 
 interface Props {
   url: string;
-  setSelectedUrl:(item:string) => void
+  setSelectedUrl: (item: string) => void;
 }
 
-const PokemonInformation: FC<Props> = ({ url ,setSelectedUrl}) => {
-  const { data: pokemonData } = useFetch<any>(url ? url : "");
+const PokemonInformation: FC<Props> = ({ url, setSelectedUrl }) => {
+  const { data: pokemonData, isLoading } = useFetch<any>(url ? url : "");
   const [pokemonInfo, setPokemonInfo] = useState<PokemonInfoType | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [chartData, setChartData] = useState<any>();
@@ -75,22 +92,23 @@ const PokemonInformation: FC<Props> = ({ url ,setSelectedUrl}) => {
 
   return (
     <Modal isOpen={openModal} setOpen={setOpenModal}>
-      <div>name:{pokemonInfo?.name}</div>
-      <div>species:{pokemonInfo?.species.name}</div>
-      <div>
+      <Title>Pokemon Information</Title>
+      <Div>name:{pokemonInfo?.name}</Div>
+      <Div>species:{pokemonInfo?.species.name}</Div>
+      <Div>
         abilities:
-        {pokemonInfo?.abilities.map((item) => {
-          return <p>{item.ability.name}</p>;
+        {pokemonInfo?.abilities.map((item,i) => {
+          return <span key={i}>{item.ability.name}{i !== pokemonInfo?.abilities.length - 1 && <span>,</span>}</span>;
         })}
+      </Div>
+      <div>
+        <ReactApexChart
+          options={chartData?.options}
+          series={chartData?.series}
+          type="bar"
+          height={350}
+        />
       </div>
-        <div>
-          <ReactApexChart
-            options={chartData?.options}
-            series={chartData?.series}
-            type="bar"
-            height={350}
-          />
-        </div>
     </Modal>
   );
 };

@@ -1,5 +1,9 @@
 import { useFetch } from "@/api/hooks/useFetch";
-import PokemonInformation from "@/components/modal/PokemonInfo";
+import Loading from "@/components/loader/Loading";
+import dynamic from "next/dynamic";
+const PokemonInformation = dynamic(() => import("../../modal/PokemonInfo"), {
+  ssr: false,
+});
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -43,14 +47,13 @@ background-color:  white;
 
 const Search = () => {
   const [text, setText] = useState("");
-  const { data } = useFetch<any>(
+  const { data, isLoading } = useFetch<any>(
     "https://pokeapi.co/api/v2/pokemon?limit=10000"
   );
   const [result, setResult] = useState<{ name: string; url: string }[]>([]);
   const [selectedUrl, setSelectedUrl] = useState("");
 
   useEffect(() => {
-    if (data) {
       if (text) {
         const res: { name: string; url: string }[] =
           data?.results?.filter((item: any) => item.name.includes(text)) || [];
@@ -58,13 +61,15 @@ const Search = () => {
       } else {
         setResult([]);
       }
-    }
   }, [text, data]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
       <PokemonInformation url={selectedUrl} setSelectedUrl={setSelectedUrl} />
-
       <Container>
         <Input
           value={text}
@@ -74,9 +79,9 @@ const Search = () => {
         />
         {result.length !== 0 && (
           <SearchContent>
-            {result.map((item) => {
+            {result.map((item,i) => {
               return (
-                <PokemonTitle onClick={() => setSelectedUrl(item.url)}>
+                <PokemonTitle key={i} onClick={() => setSelectedUrl(item.url)}>
                   {item.name}
                 </PokemonTitle>
               );

@@ -1,6 +1,7 @@
 import { _Urls } from "@/api/_Urls";
 import { useFetch } from "@/api/hooks/useFetch";
 import { Card } from "@/components";
+import Loading from "@/components/loader/Loading";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -17,15 +18,20 @@ const GridContainer = styled.div`
   padding: 20px;
 `;
 
+const Title = styled.h1`
+text-align: center;
+font-weight: 700;
+font-size: 25px;
+`;
+
 const CategoryPage = () => {
   const { query, push } = useRouter();
-  const { data } = useFetch<any>(
+  const { data, isLoading } = useFetch<any>(
     query.category ? `${_Urls.root}/${query.category}` : ""
   );
   const [types, setTypes] = useState<CategoryTypes[]>([]);
-  const [clickedUrl, setClickedUrl] = useState("");
 
-  const penultimateCar = (url: string) => {
+  const pokemonName = (url: string) => {
     const parts = url.split("/");
     const number = parts[parts.length - 2];
     push(`./${query.category}/${number}`);
@@ -37,16 +43,23 @@ const CategoryPage = () => {
     }
   }, [data]);
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <GridContainer>
-      {types?.map((item) => {
-        return (
-          <div onClick={() => penultimateCar(item.url)}>
-            <Card>{item.name}</Card>
-          </div>
-        );
-      })}
-    </GridContainer>
+    <div>
+      <Title>{query.category} Categories</Title>
+      <GridContainer>
+        {types?.map((item,i) => {
+          return (
+            <div key={i} onClick={() => pokemonName(item.url)}>
+              <Card>{item.name}</Card>
+            </div>
+          );
+        })}
+      </GridContainer>
+    </div>
   );
 };
 

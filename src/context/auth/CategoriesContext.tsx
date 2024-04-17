@@ -1,5 +1,6 @@
 import { _Urls } from "@/api/_Urls";
 import { useFetch } from "@/api/hooks/useFetch";
+import Loading from "@/components/loader/Loading";
 import {
   createContext,
   FC,
@@ -78,7 +79,7 @@ export const CategoriesProvider: FC<ICategoriesProviderProps> = ({
   const [categories, setCategories] = useState<CategoriesType>(
     {} as CategoriesType
   );
-  const { data } = useFetch<CategoriesType>(`${_Urls.root}/`);
+  const { data, isLoading } = useFetch<CategoriesType>(`${_Urls.root}/`);
 
   useEffect(() => {
     if (data) {
@@ -89,6 +90,10 @@ export const CategoriesProvider: FC<ICategoriesProviderProps> = ({
   const CategoriesContextValue: ICategoriesActions = {
     categories,
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <CategoriesContext.Provider value={CategoriesContextValue}>

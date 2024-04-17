@@ -12,16 +12,23 @@ const GridContainer = styled.div`
   padding: 20px;
 `;
 
+const Title = styled.h1`
+text-align: center;
+font-weight: 700;
+font-size: 25px;
+`
+
 const HomePage = () => {
   const { categories } = useCategories();
 
   return (
     <div>
       <Search />
+      <Title>ALL CATEGORIES</Title>
       <GridContainer>
-        {Object.keys(categories).map((item) => {
+        {Object.keys(categories).map((item,i) => {
           return (
-            <Link href={`./${item}`}>
+            <Link key={i} href={`./${item}`}>
               <Card>{item}</Card>
             </Link>
           );
